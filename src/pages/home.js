@@ -5,13 +5,12 @@ import axios from "axios";
 export const Home = () => {
   const [recipes, setRecipes] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState([]);
-
   const userID = useGetUserID();
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await axios.get("https://rec-backend-2-h0ge.onrender.com/recipes");
+        const response = await axios.get("https://rec-server-backend.onrender.com/recipes");
         setRecipes(response.data);
       } catch (err) {
         console.log(err);
@@ -21,7 +20,7 @@ export const Home = () => {
     const fetchSavedRecipes = async () => {
       try {
         const response = await axios.get(
-          `https://rec-backend-2-h0ge.onrender.com/recipes/savedRecipes/ids/${userID}`
+          `https://rec-server-backend.onrender.com/recipes/savedRecipes/ids/${userID}`
         );
         setSavedRecipes(response.data.savedRecipes);
       } catch (err) {
@@ -35,7 +34,7 @@ export const Home = () => {
 
   const saveRecipe = async (recipeID) => {
     try {
-      const response = await axios.put("https://rec-backend-2-h0ge.onrender.com/recipes", {
+      const response = await axios.put("https://rec-server-backend.onrender.com/recipes", {
         recipeID,
         userID,
       });
@@ -58,7 +57,10 @@ export const Home = () => {
               <button
                 onClick={() => saveRecipe(recipe._id)}
                 disabled={isRecipeSaved(recipe._id)}
-                style={saveButtonStyle}
+                style={{
+                  ...saveButtonStyle,
+                  ...(isRecipeSaved(recipe._id) ? savedButtonStyle : {}),
+                }}
               >
                 {isRecipeSaved(recipe._id) ? "Saved" : "Save"}
               </button>
@@ -83,17 +85,17 @@ export const Home = () => {
 
 // Inline styles for the Home component
 const containerStyle = {
-  maxWidth: "1000px",
-  margin: "80px auto 20px", // Top margin to account for fixed navbar
+  maxWidth: "1200px", // Slightly wider to accommodate 3 columns
+  margin: "80px auto 20px", // Top margin for fixed navbar
   padding: "20px",
-  backgroundColor: "#f5f6fa", // Light background for the container
+  backgroundColor: "#f5f6fa",
   borderRadius: "10px",
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 };
 
 const headingStyle = {
   textAlign: "center",
-  color: "#2c3e50", // Dark blue to match navbar theme
+  color: "#2c3e50",
   fontSize: "2.5rem",
   marginBottom: "30px",
   fontWeight: "700",
@@ -103,7 +105,7 @@ const recipeListStyle = {
   listStyle: "none",
   padding: "0",
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gridTemplateColumns: "repeat(3, 1fr)", // Fixed to 3 columns
   gap: "25px",
 };
 
@@ -130,7 +132,7 @@ const recipeTitleStyle = {
 };
 
 const saveButtonStyle = {
-  backgroundColor: "#3498db", // Blue for "Save" button
+  backgroundColor: "#3498db",
   color: "#fff",
   border: "none",
   padding: "8px 15px",
@@ -138,6 +140,11 @@ const saveButtonStyle = {
   cursor: "pointer",
   fontSize: "1rem",
   transition: "background-color 0.3s",
+};
+
+const savedButtonStyle = {
+  backgroundColor: "#95a5a6", // Grey for "Saved" state
+  cursor: "not-allowed",
 };
 
 const instructionsStyle = {
